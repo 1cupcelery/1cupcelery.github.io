@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>3D Connect 4</title>
+
+  <meta name="author" content="ChatGPT">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="images/black_circle/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  
+  <style>
+    :root{--cell-size:56px;--gap:8px}
+    body{font-family:system-ui,Segoe UI,Roboto,'PingFang SC',sans-serif;display:flex;flex-direction:column;align-items:center;padding:18px;background:#f6f7fb;color:#111}
+    h1{margin:0 0 12px;font-size:20px}
+    .controls{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+    button{padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer}
+    .board{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;align-items:start}
+    .layer{background:#fff;border:1px solid #e3e6ef;border-radius:8px;padding:12px;box-shadow:0 6px 18px rgba(20,24,40,0.04)}
+    .layer-title{font-weight:600;margin-bottom:8px;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(4, var(--cell-size));grid-gap:var(--gap)}
+    .cell{width:var(--cell-size);height:var(--cell-size);display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fbfcff,#f3f5fb);border-radius:8px;border:1px solid #e4e7f2;cursor:pointer;position:relative}
+    .cell.locked{opacity:0.6;cursor:not-allowed}
+    .disc{width:70%;height:70%;border-radius:50%;box-shadow:inset 0 -6px 10px rgba(0,0,0,0.08);}
+    .black{background:#111}
+    .white{background:#fff;border:1px solid #ccc}
+    .status{margin-left:6px}
+    .win{outline:3px solid gold;box-shadow:0 6px 18px rgba(200,150,10,0.12)}
+    .footer{margin-top:14px;color:#666;font-size:13px;text-align:center;max-width:600px}
+    @media(max-width:700px){:root{--cell-size:44px}}
+  </style>
+</head>
+<body>
+  <h1>3D Connect 4</h1>
+  <div class="controls">
+    <div>Current player: <strong id="current">Black</strong></div>
+    <button id="undoBtn">Undo</button>
+    <button id="resetBtn">Reset</button>
+    <div class="status" id="message"></div>
+  </div>
+
+  <div class="board" id="boardContainer"></div>
+
+  <div class="footer">Rule: You can only drop a piece if the same (x, y) position in the layer below is occupied, or if it’s the bottom layer. The player who connects four in a straight line in 3D wins.</div>
+
+<script>
+(()=>{
+  const SIZE = 4;
+  const board = [];
+  const moveHistory = [];
+  const boardContainer = document.getElementById('boardContainer');
+  const currentEl = document.getElementById('current');
+  const messageEl = document.getElementById('message');
+  const resetBtn = document.getElementById('resetBtn');
+  const undoBtn = document.getElementById('undoBtn');
+
+  let current = 'black';
+  let gameOver = false;
+
+  function initBoard(){
+    for(let z=0;z<SIZE;z++){
+      board[z]=[];
+      for(let y=0;y<SIZE;y++){
+        board[z][y]=[];
+        for(let x=0;x<SIZE;x++) board[z][y][x]=null;
+      }
+    }
+    moveHistory.length = 0;
+  }
+
+  // Generate all possible lines of length 4
+  const lines = [];
+  const dirs = [];
+  for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(let dz=-1;dz<=1;dz++){
+    if(dx===0 && dy===0 && dz===0) continue;
+    dirs.push([dx,dy,dz]);
+  }
+  for(let z=0;z<SIZE;z++)for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+    for(const [dx,dy,dz] of dirs){
+      const px = x-dx, py = y-dy, pz = z-dz;
+      if(px>=0 && px<SIZE && py>=0 && py<SIZE && pz>=0 && pz<SIZE) continue;
+      const pts = [];
+      let ok=true;
+      for(let k=0;k<4;k++){
+        const nx = x + k*dx, ny = y + k*dy, nz = z + k*dz;
+        if(nx<0||nx>=SIZE||ny<0||ny>=SIZE||nz<0||nz>=SIZE){ ok=false; break; }
+        pts.push([nx,ny,nz]);
+      }
+      if(ok) lines.push(pts);
+    }
+  }
+
+  function render(){
+    boardContainer.innerHTML='';
+    for(let z=SIZE-1; z>=0; z--){
+      const layerDiv = document.createElement('div');
+      layerDiv.className='layer';
+      const title = document.createElement('div');
+      title.className='layer-title';
+      title.textContent = `Layer ${z} ${z===0?'(bottom)':z===SIZE-1?'(top)':''}`;
+      layerDiv.appendChild(title);
+      const grid = document.createElement('div');
+      grid.className='grid';
+      for(let y=0;y<SIZE;y++){
+        for(let x=0;x<SIZE;x++){
+          const cell = document.createElement('div');
+          cell.className='cell';
+          cell.dataset.x = x; cell.dataset.y = y; cell.dataset.z = z;
+          const val = board[z][y][x];
+          if(val){
+            const d = document.createElement('div');
+            d.className='disc '+(val==='black'?'black':'white');
+            cell.appendChild(d);
+            cell.classList.add('locked');
+          } else {
+            if(z===0 || board[z-1][y][x]){
+              cell.addEventListener('click', onCellClick);
+            } else {
+              cell.classList.add('locked');
+            }
+          }
+          grid.appendChild(cell);
+        }
+      }
+      layerDiv.appendChild(grid);
+      boardContainer.appendChild(layerDiv);
+    }
+    currentEl.textContent = current==='black'?'Black':'White';
+  }
+
+  function onCellClick(e){
+    if(gameOver) return;
+    const cell = e.currentTarget;
+    const x = +cell.dataset.x, y = +cell.dataset.y, z = +cell.dataset.z;
+    if(board[z][y][x]) return;
+    if(!(z===0 || board[z-1][y][x])) return;
+    board[z][y][x] = current;
+    moveHistory.push({x,y,z,color:current});
+    const win = checkWin();
+    render();
+    if(win){
+      gameOver=true;
+      messageEl.textContent = (current==='black'?'Black':'White') + ' wins!';
+      highlightLine(win);
+    } else {
+      current = current==='black'?'white':'black';
+      messageEl.textContent = '';
+      if(isDraw()){
+        gameOver=true; messageEl.textContent='Draw (no valid moves).';
+      }
+    }
+  }
+
+  function undoMove(){
+    if(moveHistory.length===0 || gameOver) return;
+    const last = moveHistory.pop();
+    board[last.z][last.y][last.x] = null;
+    current = last.color; // revert turn
+    gameOver = false;
+    messageEl.textContent = '';
+    render();
+  }
+
+  function isDraw(){
+    for(let z=0;z<SIZE;z++)for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+      if(!board[z][y][x] && (z===0 || board[z-1][y][x])) return false;
+    }
+    return true;
+  }
+
+  function checkWin(){
+    for(const pts of lines){
+      const [x0,y0,z0] = pts[0];
+      const v = board[z0][y0][x0];
+      if(!v) continue;
+      let all = true;
+      for(let k=1;k<4;k++){
+        const [x,y,z] = pts[k];
+        if(board[z][y][x] !== v){ all=false; break; }
+      }
+      if(all) return pts;
+    }
+    return null;
+  }
+
+  function highlightLine(pts){
+    const cells = boardContainer.querySelectorAll('.cell');
+    pts.forEach(([x,y,z])=>{
+      for(const c of cells){
+        if(+c.dataset.x===x && +c.dataset.y===y && +c.dataset.z===z){
+          c.classList.add('win');
+        }
+      }
+    });
+  }
+
+  resetBtn.addEventListener('click', ()=>{
+    initBoard(); current='black'; gameOver=false; messageEl.textContent=''; render();
+  });
+
+  undoBtn.addEventListener('click', ()=>{
+    undoMove();
+  });
+
+  initBoard(); render();
+})();
+</script>
+</body>
+</html>
