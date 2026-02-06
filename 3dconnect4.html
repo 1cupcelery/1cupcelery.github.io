@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="ChatGPT">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D Connect 4</title>
+  <link rel="shortcut icon" href="images/ferris_wheel/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="stylessheet-games.css">
+</head>
+
+<div id="winOverlay" class="win-overlay hidden">
+  <div class="win-text" id="winText"></div>
+</div>
+
+<body>
+
+  <h1>3D Connect 4</h1>
+  <div class="controls">
+    <div>Last move by: <strong id="current"></strong></div>
+    <button id="undoBtn">Undo</button>
+    <button id="resetBtn">Reset</button>
+    <div class="status" id="message"></div>
+  </div>
+
+  <div class="board" id="boardContainer"></div>
+
+  <div class="footer">
+    Rule: You can only drop a piece if the same (x, y) position in the layer below is occupied, 
+    or if it's the bottom layer.
+    <br>
+    The player who connects four in a straight line in 3D wins.
+  </div>
+
+  <script>
+  (()=>{
+    const SIZE = 4;
+    const board = [];
+    const moveHistory = [];
+    const boardContainer = document.getElementById('boardContainer');
+    const currentEl = document.getElementById('current');
+    const messageEl = document.getElementById('message');
+    const resetBtn = document.getElementById('resetBtn');
+    const undoBtn = document.getElementById('undoBtn');
+
+    const winOverlay = document.getElementById('winOverlay');
+    const winText = document.getElementById('winText');
+
+    winOverlay.addEventListener('click', ()=>{ winOverlay.classList.add('hidden'); });
+
+    let current = 'black';
+    let gameOver = false;
+
+    function initBoard(){
+      for(let z=0;z<SIZE;z++){
+        board[z]=[];
+        for(let y=0;y<SIZE;y++){
+          board[z][y]=[];
+          for(let x=0;x<SIZE;x++) board[z][y][x]=null;
+        }
+      }
+      moveHistory.length = 0;
+    }
+
+    // Generate all possible lines of length 4
+    const lines = [];
+    const dirs = [];
+    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(let dz=-1;dz<=1;dz++){
+      if(dx===0 && dy===0 && dz===0) continue;
+      dirs.push([dx,dy,dz]);
+    }
+    for(let z=0;z<SIZE;z++)for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+      for(const [dx,dy,dz] of dirs){
+        const px = x-dx, py = y-dy, pz = z-dz;
+        if(px>=0 && px<SIZE && py>=0 && py<SIZE && pz>=0 && pz<SIZE) continue;
+        const pts = [];
+        let ok=true;
+        for(let k=0;k<4;k++){
+          const nx = x + k*dx, ny = y + k*dy, nz = z + k*dz;
+          if(nx<0||nx>=SIZE||ny<0||ny>=SIZE||nz<0||nz>=SIZE){ ok=false; break; }
+          pts.push([nx,ny,nz]);
+        }
+        if(ok) lines.push(pts);
+      }
+    }
+
+    function render(){
+      boardContainer.innerHTML='';
+      for(let z=0; z<SIZE; z++){
+        const layerDiv = document.createElement('div');
+        layerDiv.className='layer';
+        const title = document.createElement('div');
+        title.className='layer-title';
+        title.textContent = `Layer ${z+1} ${z===0?'(bottom)':z===SIZE-1?'(top)':''}`;
+        layerDiv.appendChild(title);
+        const grid = document.createElement('div');
+        grid.className='grid';
+        for(let y=0;y<SIZE;y++){
+          for(let x=0;x<SIZE;x++){
+            const cell = document.createElement('div');
+            cell.className='cell';
+            cell.dataset.x = x; cell.dataset.y = y; cell.dataset.z = z;
+            const val = board[z][y][x];
+            if(val){
+              const d = document.createElement('div');
+              d.className='disc '+(val==='black'?'black':'white');
+              cell.appendChild(d);
+              cell.classList.add('locked');
+            } else {
+              if(z===0 || board[z-1][y][x]){
+                cell.addEventListener('click', onCellClick);
+              } else {
+                cell.classList.add('locked');
+              }
+            }
+            grid.appendChild(cell);
+          }
+        }
+        layerDiv.appendChild(grid);
+        boardContainer.appendChild(layerDiv);
+      }
+      currentEl.textContent = current==='black'?'Black':'White';
+    }
+
+    function onCellClick(e){
+      if(gameOver) return;
+      const cell = e.currentTarget;
+      const x = +cell.dataset.x, y = +cell.dataset.y, z = +cell.dataset.z;
+      if(board[z][y][x]) return;
+      if(!(z===0 || board[z-1][y][x])) return;
+      board[z][y][x] = current;
+      moveHistory.push({x,y,z,color:current});
+      const win = checkWin();
+      render();
+      if(win){
+        gameOver = true;
+        highlightLine(win);
+        const winner = current; // 'black' or 'white'
+        winText.textContent =
+          (winner === 'black' ? 'Black' : 'White') + ' WINS!';
+        winText.classList.remove('black', 'white');
+        winText.classList.add(winner);
+        winOverlay.classList.remove('hidden');
+      } else {
+        current = current==='black'?'white':'black';
+        messageEl.textContent = '';
+        if(isDraw()){
+          gameOver=true; messageEl.textContent='Draw (no valid moves).';
+        }
+      }
+    }
+
+    function undoMove(){
+      if(moveHistory.length===0) return;
+      const last = moveHistory.pop();
+      board[last.z][last.y][last.x] = null;
+      current = last.color; // revert turn
+      gameOver = false;
+      messageEl.textContent = '';
+      render();
+    }
+
+    function isDraw(){
+      for(let z=0;z<SIZE;z++)for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+        if(!board[z][y][x] && (z===0 || board[z-1][y][x])) return false;
+      }
+      return true;
+    }
+
+    function checkWin(){
+      for(const pts of lines){
+        const [x0,y0,z0] = pts[0];
+        const v = board[z0][y0][x0];
+        if(!v) continue;
+        let all = true;
+        for(let k=1;k<4;k++){
+          const [x,y,z] = pts[k];
+          if(board[z][y][x] !== v){ all=false; break; }
+        }
+        if(all) return pts;
+      }
+      return null;
+    }
+
+    function highlightLine(pts){
+      const cells = boardContainer.querySelectorAll('.cell');
+      pts.forEach(([x,y,z])=>{
+        for(const c of cells){
+          if(+c.dataset.x===x && +c.dataset.y===y && +c.dataset.z===z){
+            c.classList.add('win');
+          }
+        }
+      });
+    }
+
+    resetBtn.addEventListener('click', ()=>{
+      initBoard(); current='black'; gameOver=false; messageEl.textContent=''; render();
+    });
+
+    undoBtn.addEventListener('click', ()=>{
+      undoMove();
+    });
+
+    initBoard();
+    render();
+  })();
+  </script>
+
+</body>
+
+
+</html>
