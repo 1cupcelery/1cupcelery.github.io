@@ -52,7 +52,7 @@ a:hover {
 }
 
 /* -------- Sticky top navigation -------- */
-.top-nav {
+/* .top-nav {
   position: sticky;
   top: 0;
 
@@ -72,6 +72,54 @@ a:hover {
 
 .top-nav a:hover {
   color: #000;
+} */
+
+.top-nav {
+  position: sticky;
+  top: 0;
+
+  background: #ffffff;
+
+  padding: 0.8em 0;
+  margin-bottom: 2.0em;
+
+  border-bottom: 1px solid #eee;
+  z-index: 100;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left a,
+.nav-right a {
+  margin-right: 14px;
+  color: #444;
+  margin-left: 14px;
+}
+
+.nav-right a:last-child {
+  margin-right: 14px;
+}
+
+.top-nav a:hover {
+  color: #000;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  fill: #444;
+  vertical-align: middle;
+  transition: fill 0.2s ease;
+}
+
+.nav-right a:hover .icon {
+  fill: #000;
+}
+
+.nav-right a:hover {
+  text-decoration: none;
 }
 
 /* -------- Intro block -------- */
@@ -138,7 +186,7 @@ a:hover {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
