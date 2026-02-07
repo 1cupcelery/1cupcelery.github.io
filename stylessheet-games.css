@@ -4,7 +4,7 @@
 }
 
 body{
-  font-family: Georgia, serif, "Times New Roman";
+  font-family: Verdana, Georgia, serif, "Times New Roman";
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -28,7 +28,7 @@ h1{
 }
 
 button{
-  font-family: Georgia, serif, "Times New Roman";
+  font-family: Verdana, Georgia, serif, "Times New Roman";
   padding:8px 12px;
   border-radius:8px;
   border:1px solid #ddd;

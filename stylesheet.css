@@ -1,6 +1,6 @@
 /* -------- Global baseline -------- */
 body {
-  font-family: Georgia, serif, "Times New Roman";
+  font-family: Verdana, Georgia, serif, "Times New Roman";
   background: #ffffff;
   color: #222;
   margin: 0;
@@ -86,8 +86,8 @@ a:hover {
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: #444;
   vertical-align: middle;
   transition: fill 0.2s ease;
