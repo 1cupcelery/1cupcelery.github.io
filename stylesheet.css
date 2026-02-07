@@ -52,28 +52,6 @@ a:hover {
 }
 
 /* -------- Sticky top navigation -------- */
-/* .top-nav {
-  position: sticky;
-  top: 0;
-
-  background: #ffffff;
-
-  padding: 0.8em 0;
-  margin-bottom: 2.0em;
-
-  border-bottom: 1px solid #eee;
-  z-index: 100;
-}
-
-.top-nav a {
-  margin-right: 16px;
-  color: #444;
-}
-
-.top-nav a:hover {
-  color: #000;
-} */
-
 .top-nav {
   position: sticky;
   top: 0;
@@ -91,15 +69,16 @@ a:hover {
   align-items: center;
 }
 
-.nav-left a,
-.nav-right a {
-  margin-right: 14px;
+.nav-left a{
+  margin-right: 16px;
   color: #444;
-  margin-left: 14px;
+  margin-left: 0;
 }
 
-.nav-right a:last-child {
-  margin-right: 14px;
+.nav-right a {
+  margin-right: 0;
+  color: #444;
+  margin-left: 16px;
 }
 
 .top-nav a:hover {
@@ -107,8 +86,8 @@ a:hover {
 }
 
 .icon {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   fill: #444;
   vertical-align: middle;
   transition: fill 0.2s ease;
