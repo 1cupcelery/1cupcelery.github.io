@@ -196,5 +196,9 @@ button{
 
 @media(max-width:700px){
   :root{--cell-size:44px}
+
+  .board{
+    grid-template-columns:1fr;
+  }
 }
 

@@ -101,6 +101,28 @@ a:hover {
   text-decoration: none;
 }
 
+@media (max-width:600px){
+
+  .top-nav{
+      flex-direction:column;
+      gap:10px;
+  }
+
+  .nav-left,
+  .nav-right{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:12px;
+  }
+
+  .nav-left a,
+  .nav-right a{
+      margin:0;
+  }
+
+}
+
 /* -------- Intro block -------- */
 .header {
   margin-bottom: 1.5em;
@@ -127,14 +149,17 @@ a:hover {
   border-radius: 10px;
 }
 
-@media (max-width: 600px) {
-  .intro {
-    flex-direction: column;
-  }
+@media (max-width:600px){
 
-  .intro-photo img {
-    width: 160px;
-  }
+    .intro{
+        flex-direction:column;
+    }
+
+    .intro-photo img{
+        width:90vw;
+        max-width:340px;
+    }
+
 }
 
 /* -------- Items -------- */
@@ -175,7 +200,7 @@ a:hover {
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .gallery-grid {
     grid-template-columns: 1fr;
   }
