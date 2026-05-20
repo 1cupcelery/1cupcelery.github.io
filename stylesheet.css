@@ -102,25 +102,12 @@ a:hover {
 }
 
 @media (max-width:600px){
-
-  .top-nav{
-      flex-direction:column;
-      gap:10px;
+  .top-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
   }
-
-  .nav-left,
-  .nav-right{
-      display:flex;
-      justify-content:center;
-      flex-wrap:wrap;
-      gap:12px;
-  }
-
-  .nav-left a,
-  .nav-right a{
-      margin:0;
-  }
-
 }
 
 /* -------- Intro block -------- */
@@ -149,15 +136,15 @@ a:hover {
   border-radius: 10px;
 }
 
-@media (max-width:600px){
+@media (max-width:800px){
 
     .intro{
         flex-direction:column;
     }
 
     .intro-photo img{
-        width:90vw;
-        max-width:340px;
+        width:100%;
+        /* max-width:340px; */
     }
 
 }
