@@ -1,3 +1,22 @@
+/* -------- Fonts -------- */
+@font-face {
+    font-family: "Architects Daughter";
+    src: url("./fonts/architects-daughter-latin-400-normal.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Shenyu Chinese";
+    src: url("./fonts/shenyu-chinese.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+
+.name-cn {
+    font-family: "Shenyu Chinese", sans-serif;
+}
+
 /* -------- Global baseline -------- */
 body {
   font-family: Verdana, Georgia, serif, "Times New Roman";
@@ -16,20 +35,23 @@ img {
 
 /* -------- Page container -------- */
 .container {
-  max-width: 800px;          
+  background: #ffffff;
+  max-width: 850px;          
   margin: 0 auto;         
   padding: 0 20px;           
 }
 
 /* -------- Headings -------- */
 h1 {
-  font-size: 2.2rem;
+  font-family: "Architects Daughter", Verdana, Georgia, serif, "Times New Roman";
+  font-size: 2.4rem;
   font-weight: normal;
   margin-bottom: 0.2em;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-family: "Architects Daughter", Verdana, Georgia, serif, "Times New Roman";
+  font-size: 1.6rem;
   font-weight: normal;
   margin-top: 2.0em;
   margin-bottom: 0.6em;
@@ -47,8 +69,19 @@ a {
 }
 
 a:hover {
-  color: #2c5526;
+  color: #38862e;
   text-decoration: underline;
+}
+
+/* Black links */
+a.link-black {
+  color: #222;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a.link-black:hover {
+  color: #d3a956;;
 }
 
 /* -------- Sticky top navigation -------- */
@@ -57,8 +90,7 @@ a:hover {
   top: 0;
 
   background: #ffffff;
-
-  padding: 0.8em 0;
+  padding: 0.8em 0px;
   margin-bottom: 2.0em;
 
   border-bottom: 1px solid #eee;
@@ -70,7 +102,7 @@ a:hover {
 }
 
 .nav-left a{
-  margin-right: 16px;
+  margin-right: 36px;
   color: #444;
   margin-left: 0;
 }
@@ -78,7 +110,7 @@ a:hover {
 .nav-right a {
   margin-right: 0;
   color: #444;
-  margin-left: 16px;
+  margin-left: 36px;
 }
 
 .top-nav a:hover {
@@ -101,22 +133,40 @@ a:hover {
   text-decoration: none;
 }
 
-@media (max-width:600px){
+
+@media (max-width: 580px) {
   .top-nav {
+    justify-content: flex-start;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
+
+    /* padding: 0.8em 20px !important; */
+    gap: 0;
   }
-}
 
-/* -------- Header block (abandoned) -------- */
-.header {
-  margin-bottom: 1.5em;
-}
+  .nav-left,
+  .nav-right {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+  }
 
-.header-title {
-  font-size: 1.2em;
+  .nav-left a {
+    margin-right: 30px;
+    margin-left: 0;
+  }
+
+  .nav-right a {
+    margin-right: 36px;
+    margin-left: 0;
+  }
+
+  .top-nav::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* -------- Intro block -------- */
@@ -131,8 +181,12 @@ a:hover {
   flex: 1;
 }
 
+.intro-detail {
+  font-size: 1.1em;
+}
+
 .intro-photo img {
-  width: 340px;
+  width: 360px;
   border-radius: 10px;
 }
 
@@ -170,9 +224,48 @@ a:hover {
   padding-left: 1.4em;
 }
 
+/* -------- Click Notes -------- */
+.click-note {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: #70996a;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 2px;
+}
+
+.click-note:hover {
+  text-decoration-color: #38862e;
+}
+
+.click-note-box {
+  display: block;
+  max-width: 850px;
+  margin-top: 0.6em;
+  padding: 0.85em 1em;
+  border: 1px solid #d8dfd8;
+  border-radius: 6px;
+  background: #fbfcfa;
+  color: #444b45;
+  font-size: 0.9em;
+  line-height: 1.6;
+  /* box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06); */
+}
+
+.click-note-box[hidden] {
+  display: none;
+}
+
 /* -------- Gallery -------- */
 .gallery {
   margin-top: 1.2em;
+}
+
+.note {
+  color: #888;
+  font-size: 0.9em;
 }
 
 .gallery-grid {
@@ -227,12 +320,32 @@ a:hover {
 
 .state-desc {
   padding: 1em;
-  font-size: 0.9em;
+  /* font-size: 0.9em; */
   line-height: 1.4;
-  color: #222;
+  /* color: #222; */
   background: #fafafa;
   text-align: center;
   animation: fadeIn 0.4s ease;
+}
+
+.state-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.state-title {
+  font-size: 1em;
+  color: #222;
+}
+
+.state-caption {
+  margin: 0;
+  font-size: 0.85em;
+  line-height: 1.5;
+  color: #888;
+  text-align: center;
 }
 
 .gallery-item[data-state="1"] .state-image-1 {
@@ -252,6 +365,7 @@ a:hover {
   margin-top: 4em;
   font-size: 0.85rem;
   padding: 0.2em 0;
-  border-top: 1px solid #eee;
+  /* border-top: 1px solid #eee; */
   color: #444;
+  text-align: center;
 }

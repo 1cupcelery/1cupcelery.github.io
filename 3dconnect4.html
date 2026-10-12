@@ -28,7 +28,7 @@
   <div class="board" id="boardContainer"></div>
 
   <div class="footer">
-    Rule: You can only drop a piece if the same (x, y) position in the layer below is occupied, 
+    Rules: You can only drop a piece if the same (x, y) position in the layer below is occupied, 
     or if it's the bottom layer.
     The player who connects 4 in a 3D straight line wins.
   </div>
@@ -92,7 +92,7 @@
         layerDiv.className='layer';
         const title = document.createElement('div');
         title.className='layer-title';
-        title.textContent = `Layer ${z+1} ${z===0?'(bottom)':z===SIZE-1?'(top)':''}`;
+        title.textContent = `Layer ${z+1} ${z===0?'(Bottom)':z===SIZE-1?'(Top)':''}`;
         layerDiv.appendChild(title);
         const grid = document.createElement('div');
         grid.className='grid';

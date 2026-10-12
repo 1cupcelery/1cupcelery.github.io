@@ -25,6 +25,19 @@
       </div>
 
       <div class="nav-right">
+        <a href="https://scholar.google.com/citations?user=pvJG4ucAAAAJ&hl=en" target="_blank" aria-label="Google Scholar">
+          <!-- Google Scholar icon -->
+          <svg viewBox="0 0 24 24" class="icon">
+            <!-- Academic cap -->
+            <path d="M12 0L0 9.5L12 19L24 9.5Z"/>
+
+            <!-- White gap -->
+            <circle cx="12" cy="17" r="7.5" fill="white"/>
+
+            <!-- Head -->
+            <circle cx="12" cy="17" r="7"/>
+          </svg>
+        </a>
         <a href="https://github.com/1cupcelery" target="_blank" aria-label="GitHub">
           <!-- GitHub icon -->
           <svg viewBox="0 0 24 24" class="icon">
@@ -42,41 +55,59 @@
 
     <div class="intro" id="about">
       <div class="intro-text">
-        <!-- <div class="header"> -->
-        <h1>Shenyu Qin 秦申雨</h1>
-        <!-- </div> -->
-        <p>
-          Incoming Research Assistant at HKUST
+        <h1>Shenyu Qin
+          <span class="name-cn">秦申雨</span>
+        </h1>
+        <p class="intro-detail">
+          Research Assistant<br>
+          Hong Kong University of Science and Technology
         </p>
-        <p>
-          📫 celery2022 [at] sjtu.edu.cn
+        <p class="intro-detail">
+          📫 qinshenyu29 [at] gmail.com
         </p>
       </div>
 
       <div class="intro-photo">
-        <img src="images/ShenyuQin2026'.jpg" alt="Shenyu Qin">
+        <img src="images/ShenyuQin2026.jpg" alt="Shenyu Qin">
       </div>
     </div>
 
     <p>
-      Hi! I'm Shenyu. I recently graduated with a BEng in Computer Science from Shanghai Jiao Tong University🥳! 
-      From Fall 2026, I will be a Research Assistant at the Hong Kong University of Science and Technology, working with Prof. <a href="https://yj10027.github.io/">Yaonan Jin</a>.
-      I am interested in theoretical computer science, especially algorithmic game theory and online algorithms. 
-      <!-- (I am also exploring topics in economics and graph theory.) -->
-      </p>
-      <p>
-      During my undergraduate studies, I was very fortunate to be advised by Prof. <a href="http://www.zyhwtc.com/">Yuhao Zhang</a> 
-      and Prof. <a href="https://chihaozhang.com/">Chihao Zhang</a> at SJTU. 
+      Hi! I'm Shenyu. 
+      I am a 
+      <span class="click-note" tabindex="0" role="button"
+      aria-expanded="false"
+      aria-controls="ra-note"
+      onclick="toggleNote(this)"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNote(this)}">Research Assistant</span>
+      at the Hong Kong University of Science and Technology, working with <a href="https://yj10027.github.io/">Yaonan Jin</a>. 
+      I am interested in theoretical computer science, particularly algorithms, probability, and problems at the intersection of computer science and economics.
+      <span class="click-note-box" id="ra-note" hidden>
+        I am currently working remotely and will officially start
+        on-site in the next month.
+      </span>
+      <!-- I would like to explore how algorithmic and probabilistic ideas can be applied to decision-making in social and economic settings. -->
+    </p>
+    <p>
+      I received my BEng in Computer Science from Shanghai Jiao Tong University in June this year.
+      During my undergraduate studies, I was fortunate to be guided by <a href="http://www.zyhwtc.com/">Yuhao Zhang</a> 
+      and <a href="https://chihaozhang.com/">Chihao Zhang</a>. 
       In 2025, I spent five wonderful months at DIMACS, Rutgers University as a visiting research student,
       where I worked with 
-      Prof. <a href="https://people.cs.rutgers.edu/~kn.w/">Kangning Wang</a> and 
-      Prof. <a href="https://people.cs.rutgers.edu/~lirong.xia/">Lirong Xia</a>.
+      <a href="https://people.cs.rutgers.edu/~kn.w/">Kangning Wang</a> and 
+      <a href="https://people.cs.rutgers.edu/~lirong.xia/">Lirong Xia</a>.
     </p>
     <p>
       📌 I am a PhD applicant for Fall 2027! Please see my <a href="data/ShenyuQinCV.pdf">CV</a>.
     </p>
 
     <h2 id="research">Research</h2>
+    <div class="item">
+      <div class="item-name"><a href=https://arxiv.org/abs/2610.13775>A 1/2-Approximation for Pandora's Problem with Deadlines</a></div>
+      <div class="item-content">
+        with Chihao Zhang, Yuhao Zhang and <a href="https://zixuannnzhu.github.io/" class="link-black">Zixuan Zhu</a>
+      </div>
+    </div>
     <div class="item">
       <div class="item-name"><a href=https://arxiv.org/abs/2602.04815>Winning in the Limit: 
         Average-Case Committee Selection with Many Candidates</a></div>
@@ -87,44 +118,26 @@
       </div>
     </div>
 
-    <!-- <h2 id="projects">Projects</h2>
-    <p>
-      Here are some interesting course projects.
-    </p>
-    <div class="item">
-      <div class="item-name">Towards the chat among distinct LLM agents</div>
-      <div class="item-content">
-        CS3966: Natural Language Processing and Large Language Model, Spring 2024
-        <br>
-        <a href="data/LLM2024_paper.pdf">Paper</a>
-        |
-        <a href="data/LLM2024_slides.pdf">Slides</a>
-        <br>
-        We investigated the collaborative potential of completely distinct LLM agents (GPT, Llama, and Wenxin Yiyan) 
-        through structured dialogues and wrote a paper about the results.
-        Surprisingly, we discovered a new technique termed ”Virtual Conversation”, where an LLM internally simulates 
-        a multi-agent discussion.
-      </div>
-    </div>
-    <div class="item">
-      <div class="item-name">Lexical and Syntax Analysis of a Programming Language with Array and String Types</div>
-      <div class="item-content">
-        CS2205: Programming Languages Design and Implementation, Fall 2023
-        <br>
-        <a href="https://github.com/cjyyiii/CS2205-PLDI">Code</a>
-        <br>
-        We performed lexical and syntax analysis on the WHILE language with array and string types and 
-        implemented syntax tree output.
-      </div>
-    </div> -->
-
     <div class="footer">
       <p>
-        Last updated: July 2026.
-        Built with some help from ChatGPT.
+        Last updated: October 2026.
+        Built with some help from GPT.
       </p>
     </div>
   </div>
+
+  <script>
+    function toggleNote(trigger) {
+      const noteId = trigger.getAttribute('aria-controls');
+      const note = document.getElementById(noteId);
+
+      if (!note) return;
+
+      const willOpen = note.hidden;
+      note.hidden = !willOpen;
+      trigger.setAttribute('aria-expanded', String(willOpen));
+    }
+  </script>
 </body>
 
 
