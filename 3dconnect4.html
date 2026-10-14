@@ -7,7 +7,7 @@
   <meta name="author" content="ChatGPT">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>3D Connect 4</title>
-  <link rel="shortcut icon" href="images/ferris_wheel/favicon.ico">
+  <link rel="shortcut icon" href="images/cloud_with_rain/green.ico">
   <link rel="stylesheet" type="text/css" href="stylessheet-games.css">
 </head>
 
@@ -16,8 +16,17 @@
 </div>
 
 <body>
+  <iframe
+    class="cube-background"
+    src="./cube.html"
+    aria-hidden="true"
+    tabindex="-1"
+  ></iframe>
 
-  <h1>3D Connect 4</h1>
+  <h1>
+    3D Connect 4
+    <button id="toggle-cube" class="abutton" type="button" aria-pressed="false">🎲</button>
+  </h1>
   <div class="controls">
     <div>Last move by: <strong id="current"></strong></div>
     <button id="undoBtn">Undo</button>
@@ -146,7 +155,7 @@
         current = current==='black'?'white':'black';
         messageEl.textContent = '';
         if(isDraw()){
-          gameOver=true; messageEl.textContent='Draw (no valid moves).';
+          gameOver=true; messageEl.textContent='Draw! (No valid moves)';
         }
       }
     }
@@ -205,6 +214,21 @@
     initBoard();
     render();
   })();
+  </script>
+
+  <script>
+    const toggleCubeButton = document.getElementById("toggle-cube");
+    const cubeBackground = document.querySelector(".cube-background");
+
+    toggleCubeButton.addEventListener("click", () => {
+      const isActive = cubeBackground.classList.toggle("active");
+
+      toggleCubeButton.textContent = isActive
+        ? "🧊"
+        : "🎲";
+
+      toggleCubeButton.setAttribute("aria-pressed", String(isActive));
+    });
   </script>
 
 </body>

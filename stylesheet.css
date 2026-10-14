@@ -71,6 +71,7 @@ a {
 a:hover {
   color: #38862e;
   text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* Black links */
@@ -230,7 +231,7 @@ a.link-black:hover {
   text-decoration-style: dashed;
   text-decoration-color: #70996a;
   text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
+  text-underline-offset: 2px;
   cursor: pointer;
   position: relative;
   border-radius: 2px;

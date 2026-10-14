@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotating 64 Cube</title>
+
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+  }
+
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+
+<body>
+<canvas id="cube"></canvas>
+
+<script>
+const canvas = document.getElementById("cube");
+const ctx = canvas.getContext("2d");
+
+const N = 4;
+const SPACING = 2;
+const RADIUS = 0.105;
+
+// Rotation speeds: radians per second
+const SPEED_X = 0.25;
+const SPEED_Y = 0.38;
+const SPEED_Z = 0.12;
+
+const BALL_COLOR = "#26332D";
+const LINE_COLOR = "#718779";
+const BACKGROUND = "#FFFFFF";
+
+let width, height, dpr;
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+
+  width = rect.width;
+  height = rect.height;
+
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+// Generate the 64 points of a 4×4×4 lattice.
+const points = [];
+
+for (let x = 0; x < N; x++) {
+  for (let y = 0; y < N; y++) {
+    for (let z = 0; z < N; z++) {
+      points.push({
+        x: (x - 1.5) * SPACING,
+        y: (y - 1.5) * SPACING,
+        z: (z - 1.5) * SPACING,
+        id: `${x},${y},${z}`,
+        color: (x + y + z) % 2 === 0
+          ? "#26332D"
+          : "#A7B5AB"
+      });
+    }
+  }
+}
+
+// Connect neighboring spheres along all three axes.
+const edges = [];
+
+for (let i = 0; i < points.length; i++) {
+  for (let j = i + 1; j < points.length; j++) {
+    const a = points[i];
+    const b = points[j];
+
+    const dx = Math.abs(a.x - b.x);
+    const dy = Math.abs(a.y - b.y);
+    const dz = Math.abs(a.z - b.z);
+
+    const distance = dx + dy + dz;
+
+    if (
+      distance === SPACING &&
+      dx <= SPACING &&
+      dy <= SPACING &&
+      dz <= SPACING
+    ) {
+      edges.push([i, j]);
+    }
+  }
+}
+
+function rotate(p, ax, ay, az) {
+  // Rotate around X
+  let y = p.y * Math.cos(ax) - p.z * Math.sin(ax);
+  let z = p.y * Math.sin(ax) + p.z * Math.cos(ax);
+  let x = p.x;
+
+  // Rotate around Y
+  const x2 = x * Math.cos(ay) + z * Math.sin(ay);
+  const z2 = -x * Math.sin(ay) + z * Math.cos(ay);
+
+  // Rotate around Z
+  return {
+    x: x2 * Math.cos(az) - y * Math.sin(az),
+    y: x2 * Math.sin(az) + y * Math.cos(az),
+    z: z2
+  };
+}
+
+function project(p) {
+  const scaleBase = Math.min(width, height) * 0.14;
+  const focal = 9;
+  const perspective = focal / (focal - p.z);
+
+  return {
+    x: width / 2 + p.x * scaleBase * perspective,
+    y: height / 2 + p.y * scaleBase * perspective,
+    z: p.z,
+    scale: perspective
+  };
+}
+
+function draw(time) {
+  const t = time / 1000;
+
+  // Continuously rotate around multiple axes.
+  const ax = t * SPEED_X;
+  const ay = t * SPEED_Y;
+  const az = t * SPEED_Z;
+
+  ctx.clearRect(0, 0, width, height);
+//   ctx.fillStyle = BACKGROUND;
+//   ctx.fillRect(0, 0, width, height);
+
+  const rotated = points.map(p =>
+    project(rotate(p, ax, ay, az))
+  );
+
+  // Back points are drawn first.
+  const depthValues = rotated.map(p => p.z);
+  const minZ = Math.min(...depthValues);
+  const maxZ = Math.max(...depthValues);
+
+  function depth01(z) {
+    return (z - minZ) / (maxZ - minZ || 1);
+  }
+
+  // Draw connections from back to front.
+  const sortedEdges = edges.map(([i, j]) => ({
+    a: rotated[i],
+    b: rotated[j],
+    depth: (rotated[i].z + rotated[j].z) / 2
+  })).sort((a, b) => a.depth - b.depth);
+
+  for (const edge of sortedEdges) {
+    const d = depth01(edge.depth);
+
+    ctx.beginPath();
+    ctx.moveTo(edge.a.x, edge.a.y);
+    ctx.lineTo(edge.b.x, edge.b.y);
+
+    ctx.strokeStyle = LINE_COLOR;
+    ctx.globalAlpha = 0.12 + 0.58 * d;
+
+    // Near edges are thicker; far edges are thinner.
+    ctx.lineWidth = 0.45 + 1.7 * d;
+    ctx.lineCap = "round";
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+
+  // Draw spheres from back to front.
+  const sortedPoints = points.map((p, i) => ({
+    p,
+    q: rotated[i]
+  })).sort((a, b) => a.q.z - b.q.z);
+
+  for (const item of sortedPoints) {
+    const q = item.q;
+    const d = depth01(q.z);
+    const r = RADIUS * Math.min(width, height) * q.scale;
+
+    // Subtle depth-dependent opacity.
+    ctx.globalAlpha = 0.48 + 0.52 * d;
+
+    const gradient = ctx.createRadialGradient(
+      q.x - r * 0.32,
+      q.y - r * 0.36,
+      r * 0.04,
+      q.x,
+      q.y,
+      r
+    );
+
+    const base = item.p.color;
+
+    if (base === "#26332D") {
+      gradient.addColorStop(0, "#69796E");
+      gradient.addColorStop(0.35, "#34453A");
+      gradient.addColorStop(1, "#17201B");
+    } else {
+      gradient.addColorStop(0, "#FFFFFF");
+      gradient.addColorStop(0.35, "#C8D2CB");
+      gradient.addColorStop(1, "#7F9185");
+    }
+
+    ctx.beginPath();
+    ctx.arc(q.x, q.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
